@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { MockDataService } from "../data/mock-data";
-import { createMockToken, AuthRequest } from "../middleware/auth";
+import { createToken, AuthRequest } from "../middleware/auth";
 import { z } from "zod";
 
 // Validation schemas
@@ -37,7 +37,7 @@ export const login: RequestHandler = (req, res) => {
     // You can also add specific demo passwords if needed
 
     // Generate token
-    const token = createMockToken({
+    const token = createToken({
       id: user.id,
       email: user.email,
       name: user.name,
@@ -84,7 +84,7 @@ export const register: RequestHandler = (req, res) => {
     });
 
     // Generate token
-    const token = createMockToken({
+    const token = createToken({
       id: newUser.id,
       email: newUser.email,
       name: newUser.name,

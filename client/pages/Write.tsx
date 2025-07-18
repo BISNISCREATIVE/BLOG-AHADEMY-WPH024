@@ -1,21 +1,21 @@
 import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/use-auth";
-import { useCreatePost } from "@/hooks/use-posts";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useQueryClient } from "@tanstack/react-query";
 import {
+  Button,
+  Input,
+  Textarea,
+  Card,
+  CardContent,
+  Badge,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -23,8 +23,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
+  useAuth,
+  useToast,
+} from "@/components";
+import { useCreatePost } from "@/hooks/use-posts";
 import {
   ArrowLeft,
   Bold,
@@ -439,6 +441,7 @@ export default function Write() {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const editorRef = useRef<HTMLDivElement>(null);
   const createMutation = useCreatePost();
 
@@ -532,7 +535,14 @@ export default function Write() {
     }
 
     const editorContent = editorRef.current?.innerHTML || "";
-    if (!editorContent.trim() || editorContent === "<br>") {
+    // Strip HTML tags to check if there's actual content
+    const textContent = editorContent.replace(/<[^>]*>/g, "").trim();
+    if (
+      !textContent ||
+      textContent === "" ||
+      editorContent === "<br>" ||
+      editorContent === "<div><br></div>"
+    ) {
       newErrors.content = "Content is required";
     }
 
@@ -544,32 +554,122 @@ export default function Write() {
     return Object.values(newErrors).every((error) => !error);
   };
 
-  const handleSubmit = async () => {
-    if (!validateForm()) return;
+  const handleSubmit = async (published = true) => {
+    console.log("handleSubmit called with published:", published);
+    console.log("isAuthenticated:", isAuthenticated);
+    console.log("user:", user);
+    console.log("formData:", formData);
+
+    if (!isAuthenticated) {
+      toast({
+        title: "Error",
+        description: "Please log in to create a post",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const isValid = validateForm();
+    console.log("Form validation result:", isValid);
+    console.log("Validation errors:", errors);
+
+    if (!isValid) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       const contentHtml = editorRef.current?.innerHTML || "";
 
-      await createMutation.mutateAsync({
+      // Log the data being sent for debugging
+      console.log("Submitting post with data:", {
+        title: formData.title,
+        content: contentHtml,
+        tags: formData.tags.join(", "),
+        hasImage: !!formData.image,
+        published,
+      });
+
+      console.log("About to call createMutation.mutateAsync");
+
+      const postData = {
         title: formData.title,
         content: contentHtml,
         tags: formData.tags.join(", "),
         image: formData.image,
-      });
+        published,
+      };
+
+      console.log("Post data to be sent:", postData);
+
+      const newPost = await createMutation.mutateAsync(postData);
+
+      console.log("Post created successfully:", newPost);
+
+      // Manually invalidate all queries to ensure immediate UI updates
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "recommended"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-liked"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "my-posts"] });
 
       toast({
         title: "Success",
-        description: "Post created successfully!",
+        description: published
+          ? "Post published successfully!"
+          : "Post saved as draft!",
       });
 
+      // Clear form after successful submission
+      setFormData({
+        title: "",
+        content: "",
+        tags: [],
+        image: null,
+      });
+
+      // Clear editor content
+      if (editorRef.current) {
+        editorRef.current.innerHTML = "";
+      }
+
+      setUploadedImageUrl("");
+
+      console.log("Navigating to home page");
       navigate("/");
     } catch (error) {
+      console.error("Post creation error:", error);
+      console.error("Error details:", {
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+
+      let errorMessage = "Failed to create post";
+
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.errors) {
+        const errors = error.response.data.errors;
+        errorMessage = errors.map((e) => e.message).join(", ");
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       toast({
         title: "Error",
-        description: "Failed to create post",
+        description: `${errorMessage} (Check console for details)`,
         variant: "destructive",
       });
     }
+  };
+
+  const handleSaveDraft = async () => {
+    await handleSubmit(false);
   };
 
   return (
@@ -767,13 +867,21 @@ export default function Write() {
             />
           </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-end pt-4">
+          {/* Submit Buttons */}
+          <div className="flex flex-col md:flex-row gap-3 justify-end pt-4">
+            <Button
+              onClick={handleSaveDraft}
+              disabled={createMutation.isPending}
+              variant="outline"
+              className="h-11 rounded-full px-8 text-sm font-semibold w-full md:w-auto order-2 md:order-1"
+            >
+              {createMutation.isPending ? "Saving..." : "Save as Draft"}
+            </Button>
             <Dialog>
               <DialogTrigger asChild>
                 <Button
                   disabled={createMutation.isPending}
-                  className="h-11 rounded-full bg-[#0093DD] px-8 text-sm font-semibold text-white hover:bg-[#0093DD]/90 w-full md:w-auto"
+                  className="h-11 rounded-full bg-[#0093DD] px-8 text-sm font-semibold text-white hover:bg-[#0093DD]/90 w-full md:w-auto order-1 md:order-2"
                 >
                   {createMutation.isPending ? "Publishing..." : "Finish"}
                 </Button>
@@ -791,7 +899,7 @@ export default function Write() {
                     Cancel
                   </Button>
                   <Button
-                    onClick={handleSubmit}
+                    onClick={() => handleSubmit(true)}
                     disabled={createMutation.isPending}
                     className="bg-[#0093DD] hover:bg-[#0093DD]/90"
                   >

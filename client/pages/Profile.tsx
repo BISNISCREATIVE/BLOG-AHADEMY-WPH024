@@ -1,26 +1,23 @@
 import { useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
 import {
-  useMyPosts,
-  useDeletePost,
-  useLikePost,
-  useUpdatePost,
-} from "@/hooks/use-posts";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
+  Button,
+  Input,
+  Textarea,
+  Card,
+  CardContent,
+  Badge,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -30,8 +27,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { useToast } from "@/hooks/use-toast";
+  useAuth,
+  useToast,
+} from "@/components";
+import {
+  useMyPosts,
+  useDeletePost,
+  useLikePost,
+  useUpdatePost,
+} from "@/hooks/use-posts";
+import { useUpdateProfile } from "@/hooks/use-user";
 import { validateFile, createFilePreview } from "@/lib/upload";
 import {
   Pencil,
@@ -39,14 +44,17 @@ import {
   BarChart3,
   Camera,
   FileText,
-  Heart,
-  MessageCircle,
-  Eye,
   Settings,
   User,
   Lock,
   X,
 } from "lucide-react";
+import {
+  LikeIcon,
+  CommentIcon,
+  ViewsIcon,
+  EditIcon,
+} from "@/components/ui/custom-icons";
 import { Post } from "@shared/types";
 
 interface StatisticsModalProps {
@@ -101,12 +109,16 @@ function StatisticsModal({
           <DialogTitle className="flex items-center gap-2">
             {type === "likes" ? (
               <>
-                <Heart className="h-5 w-5 text-red-500" />
+                <div className="w-5 h-5 flex items-center justify-center">
+                  <LikeIcon className="text-red-500" />
+                </div>
                 Like ({post.likes})
               </>
             ) : (
               <>
-                <MessageCircle className="h-5 w-5 text-blue-500" />
+                <div className="w-5 h-5 flex items-center justify-center">
+                  <CommentIcon className="text-blue-500" />
+                </div>
                 Comment ({post.comments})
               </>
             )}
@@ -372,15 +384,39 @@ function EditProfileModal({ user, isOpen, onClose }: EditProfileModalProps) {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const { toast } = useToast();
+  const updateProfileMutation = useUpdateProfile();
 
-  const handleSave = () => {
-    // In a real app, you would upload the avatar to a server/cloud storage
-    // and get back a URL to save in the user profile
-    toast({
-      title: "Profile Updated",
-      description: "Your profile has been updated successfully!",
-    });
-    onClose();
+  const handleSave = async () => {
+    if (!name.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Name is required.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await updateProfileMutation.mutateAsync({
+        name: name.trim(),
+        headline: headline.trim(),
+        // For now, we'll handle avatar upload separately
+        // In a real app, you would upload to cloud storage first
+        ...(avatarPreview && { avatarUrl: avatarPreview }),
+      });
+
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully!",
+      });
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleAvatarChange = async (
@@ -478,8 +514,12 @@ function EditProfileModal({ user, isOpen, onClose }: EditProfileModalProps) {
               />
             </div>
           </div>
-          <Button onClick={handleSave} className="w-full">
-            Update Profile
+          <Button
+            onClick={handleSave}
+            disabled={updateProfileMutation.isPending}
+            className="w-full"
+          >
+            {updateProfileMutation.isPending ? "Updating..." : "Update Profile"}
           </Button>
         </div>
       </DialogContent>
@@ -687,7 +727,7 @@ export default function Profile() {
                             onClick={() => setEditPostModal(post)}
                             className="flex items-center gap-1"
                           >
-                            <Pencil className="h-4 w-4" />
+                            <EditIcon className="h-4 w-4" />
                             Edit
                           </Button>
                           <AlertDialog>
@@ -729,24 +769,21 @@ export default function Profile() {
                           onClick={() =>
                             setStatisticsModal({ post, type: "likes" })
                           }
-                          className="flex items-center gap-1 hover:text-red-600 transition-colors"
+                          className="hover:opacity-80 transition-opacity"
                         >
-                          <Heart className="h-4 w-4" />
-                          {post.likes} likes
+                          <LikeIcon count={post.likes} isLiked={false} />
                         </button>
                         <button
                           onClick={() =>
                             setStatisticsModal({ post, type: "comments" })
                           }
-                          className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+                          className="hover:opacity-80 transition-opacity"
                         >
-                          <MessageCircle className="h-4 w-4" />
-                          {post.comments} comments
+                          <CommentIcon count={post.comments} />
                         </button>
-                        <span className="flex items-center gap-1">
-                          <Eye className="h-4 w-4" />
-                          {Math.floor(Math.random() * 1000) + 100} views
-                        </span>
+                        <ViewsIcon
+                          count={Math.floor(Math.random() * 1000) + 100}
+                        />
                       </div>
                     </CardContent>
                   </Card>

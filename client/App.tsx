@@ -19,7 +19,6 @@ import Profile from "./pages/Profile";
 import VisitProfile from "./pages/VisitProfile";
 import Write from "./pages/Write";
 import Edit from "./pages/Edit";
-import CrudDemo from "./pages/CrudDemo";
 import NotFound from "./pages/NotFound";
 import PlaceholderPage from "./pages/PlaceholderPage";
 
@@ -41,7 +40,6 @@ const App = () => (
               <Route path="/user/:userId" element={<VisitProfile />} />
               <Route path="/write" element={<Write />} />
               <Route path="/edit/:id" element={<Edit />} />
-              <Route path="/crud-demo" element={<CrudDemo />} />
               <Route
                 path="/settings"
                 element={<PlaceholderPage title="Settings" />}

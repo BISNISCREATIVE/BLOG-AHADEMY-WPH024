@@ -1,15 +1,16 @@
 import { useState } from "react";
-import { BlogCard } from "@/components/post/BlogCard";
-import { Pagination } from "@/components/ui/pagination";
-import { Footer } from "@/components/layout/Footer";
+import { Link } from "react-router-dom";
+import { BlogCard, Pagination, Footer, useAuth } from "@/components";
 import { useRecommendedPosts, useMostLikedPosts } from "@/hooks/use-posts";
-import { useAuth } from "@/hooks/use-auth";
 
 // Simple BlogCard for Most Liked (text only, no images)
 function SimpleBlogCard({ post }: { post: any }) {
   return (
-    <div className="space-y-3">
-      <h3 className="text-lg font-semibold text-[#181D27] leading-6 line-clamp-2">
+    <Link
+      to={`/post/${post.id}`}
+      className="block space-y-3 hover:opacity-80 transition-opacity cursor-pointer"
+    >
+      <h3 className="text-lg font-semibold text-[#181D27] leading-6 line-clamp-2 hover:text-[#0093DD] transition-colors">
         {post.title}
       </h3>
       <p className="text-sm text-[#535862] leading-5 line-clamp-3">
@@ -47,7 +48,7 @@ function SimpleBlogCard({ post }: { post: any }) {
           <span>{post.comments}</span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

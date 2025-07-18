@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { usePost, useDeletePost } from "@/hooks/use-posts";
-import { useComments } from "@/hooks/use-comments";
+import { usePost, useDeletePost, useLikePost } from "@/hooks/use-posts";
+import { useComments, useCreateComment } from "@/hooks/use-comments";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -48,39 +48,29 @@ export default function Detail() {
   const { data: post, isLoading, error } = usePost(id!);
   const { data: comments = [] } = useComments(parseInt(id!));
   const deleteMutation = useDeletePost();
+  const likeMutation = useLikePost();
+  const createCommentMutation = useCreateComment(parseInt(id!));
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [newComment, setNewComment] = useState("");
-  const queryClient = useQueryClient();
 
-  const createCommentMutation = useMutation({
-    mutationFn: async (content: string) => {
-      const response = await apiClient.post(`/posts/${id}/comments`, {
-        content,
-      });
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", parseInt(id!)] });
-      queryClient.invalidateQueries({ queryKey: ["post", id!] });
+  const handleCommentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newComment.trim() || !isAuthenticated) return;
+
+    try {
+      await createCommentMutation.mutateAsync({ content: newComment.trim() });
       setNewComment("");
       toast({
         title: "Success",
         description: "Comment added successfully!",
       });
-    },
-    onError: () => {
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to add comment",
         variant: "destructive",
       });
-    },
-  });
-
-  const handleCommentSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newComment.trim() || !isAuthenticated) return;
-    createCommentMutation.mutate(newComment.trim());
+    }
   };
 
   const handleDelete = async () => {
@@ -280,6 +270,8 @@ export default function Detail() {
             variant="ghost"
             size="sm"
             className="flex items-center gap-2 text-[#535862] hover:text-[#0093DD] p-0"
+            onClick={() => likeMutation.mutate(id!)}
+            disabled={!isAuthenticated || likeMutation.isPending}
           >
             <svg
               width="20"

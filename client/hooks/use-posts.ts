@@ -89,19 +89,28 @@ export function useCreatePost() {
       formData.append("title", data.title);
       formData.append("content", data.content);
       formData.append("tags", data.tags);
+      if (data.published !== undefined) {
+        formData.append("published", data.published.toString());
+      }
       if (data.image) {
         formData.append("image", data.image);
       }
 
+      // Create a custom config that doesn't set Content-Type for FormData
       const response = await apiClient.post("/posts", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": undefined, // Let browser set the correct multipart boundary
         },
       });
+      // Note: Don't set Content-Type for FormData, let browser handle it
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (newPost) => {
+      // Invalidate all post-related queries to show new post everywhere
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "recommended"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-liked"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "my-posts"] });
     },
   });
 }
@@ -123,16 +132,24 @@ export function useUpdatePost() {
       if (data.tags) formData.append("tags", data.tags);
       if (data.image) formData.append("image", data.image);
 
+      // Create a custom config that doesn't set Content-Type for FormData
       const response = await apiClient.patch(`/posts/${id}`, formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": undefined, // Let browser set the correct multipart boundary
         },
       });
+      // Note: Don't set Content-Type for FormData, let browser handle it
       return response.data;
     },
-    onSuccess: (_, { id }) => {
+    onSuccess: (updatedPost, { id }) => {
+      // Invalidate all post-related queries to ensure fresh data everywhere
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["posts", id] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "recommended"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-liked"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "my-posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "user"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "search"] });
     },
   });
 }
@@ -146,7 +163,11 @@ export function useDeletePost() {
       return response.data;
     },
     onSuccess: () => {
+      // Invalidate all post-related queries after deletion
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "recommended"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-liked"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "my-posts"] });
     },
   });
 }
@@ -159,9 +180,39 @@ export function useLikePost() {
       const response = await apiClient.post(`/posts/${id}/like`);
       return response.data;
     },
-    onSuccess: (_, id) => {
+    onSuccess: (updatedPost, id) => {
+      // Invalidate all post-related queries after like
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["posts", id] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "recommended"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-liked"] });
+    },
+  });
+}
+
+export function usePublishPost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      published,
+    }: {
+      id: string;
+      published: boolean;
+    }): Promise<Post> => {
+      const response = await apiClient.post(`/posts/${id}/publish`, {
+        published,
+      });
+      return response.data;
+    },
+    onSuccess: (updatedPost, { id }) => {
+      // Invalidate all post-related queries after publish status change
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", id] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "recommended"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-liked"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "my-posts"] });
     },
   });
 }

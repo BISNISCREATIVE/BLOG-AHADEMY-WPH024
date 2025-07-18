@@ -237,6 +237,32 @@ export function NotFoundIcon({
   );
 }
 
+// Edit Icon - Pencil icon for editing posts
+export function EditIcon({
+  className = "",
+  ...props
+}: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`text-[#535862] ${className}`}
+      {...props}
+    >
+      <path
+        d="M11.3334 2.00004C11.5086 1.82485 11.7164 1.68697 11.9452 1.59446C12.174 1.50195 12.4193 1.45654 12.6667 1.45654C12.9141 1.45654 13.1594 1.50195 13.3882 1.59446C13.617 1.68697 13.8247 1.82485 14 2.00004C14.1752 2.17523 14.3131 2.383 14.4056 2.61178C14.4981 2.84055 14.5435 3.08588 14.5435 3.33337C14.5435 3.58087 14.4981 3.8262 14.4056 4.05497C14.3131 4.28375 14.1752 4.49152 14 4.66671L5.00004 13.6667L1.33337 14.6667L2.33337 11L11.3334 2.00004Z"
+        stroke="currentColor"
+        strokeWidth="1.33333"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 // Share/Views Icon - Eye icon for views
 export function ViewsIcon({
   count,
