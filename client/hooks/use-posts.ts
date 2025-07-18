@@ -132,7 +132,12 @@ export function useUpdatePost() {
       if (data.tags) formData.append("tags", data.tags);
       if (data.image) formData.append("image", data.image);
 
-      const response = await apiClient.patch(`/posts/${id}`, formData);
+      // Create a custom config that doesn't set Content-Type for FormData
+      const response = await apiClient.patch(`/posts/${id}`, formData, {
+        headers: {
+          "Content-Type": undefined, // Let browser set the correct multipart boundary
+        },
+      });
       // Note: Don't set Content-Type for FormData, let browser handle it
       return response.data;
     },
