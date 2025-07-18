@@ -213,8 +213,11 @@ export class MockDataService {
     page = 1,
     limit = 10,
     sortBy: "latest" | "likes" = "latest",
+    includeUnpublished = false,
   ): PostsResponse {
-    let sortedPosts = [...this.posts];
+    let sortedPosts = includeUnpublished
+      ? [...this.posts]
+      : this.posts.filter((post) => post.published);
 
     if (sortBy === "likes") {
       sortedPosts.sort((a, b) => b.likes - a.likes);
@@ -238,9 +241,9 @@ export class MockDataService {
   }
 
   static getRecommendedPosts(page = 1, limit = 10): PostsResponse {
-    // Get first 50 posts (with images) for carousel
+    // Get first 50 posts (with images) for carousel - only published
     const postsWithImages = this.posts
-      .filter((post) => post.imageUrl)
+      .filter((post) => post.imageUrl && post.published)
       .slice(0, 50);
 
     const startIndex = (page - 1) * limit;
@@ -256,8 +259,10 @@ export class MockDataService {
   }
 
   static getMostLikedPosts(page = 1, limit = 10): PostsResponse {
-    // Get posts without images, sorted by likes
-    const postsWithoutImages = this.posts.filter((post) => !post.imageUrl);
+    // Get posts without images, sorted by likes - only published
+    const postsWithoutImages = this.posts.filter(
+      (post) => !post.imageUrl && post.published,
+    );
     const sortedPosts = postsWithoutImages.sort((a, b) => b.likes - a.likes);
 
     const startIndex = (page - 1) * limit;
@@ -280,9 +285,11 @@ export class MockDataService {
     authorId: number,
     page = 1,
     limit = 10,
+    includeUnpublished = false,
   ): PostsResponse {
     const authorPosts = this.posts.filter(
-      (post) => post.author.id === authorId,
+      (post) =>
+        post.author.id === authorId && (includeUnpublished || post.published),
     );
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
@@ -300,9 +307,10 @@ export class MockDataService {
     const searchTerm = query.toLowerCase();
     const filteredPosts = this.posts.filter(
       (post) =>
-        post.title.toLowerCase().includes(searchTerm) ||
-        post.content.toLowerCase().includes(searchTerm) ||
-        post.tags.some((tag) => tag.toLowerCase().includes(searchTerm)),
+        post.published &&
+        (post.title.toLowerCase().includes(searchTerm) ||
+          post.content.toLowerCase().includes(searchTerm) ||
+          post.tags.some((tag) => tag.toLowerCase().includes(searchTerm))),
     );
 
     const startIndex = (page - 1) * limit;
