@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { useUpdatePost, usePost, usePublishPost } from "@/hooks/use-posts";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -430,6 +431,7 @@ export default function Edit() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const editorRef = useRef<HTMLDivElement>(null);
+  const queryClient = useQueryClient();
   const updateMutation = useUpdatePost();
   const publishMutation = usePublishPost();
   const { data: post, isLoading, error } = usePost(id!);
@@ -600,6 +602,12 @@ export default function Edit() {
         },
       });
 
+      // Manually invalidate all queries to ensure immediate UI updates
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "recommended"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-liked"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "my-posts"] });
+
       toast({
         title: "Success",
         description: "Post updated successfully!",
@@ -623,6 +631,12 @@ export default function Edit() {
         id,
         published: !post.published,
       });
+
+      // Manually invalidate all queries to ensure immediate UI updates
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "recommended"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-liked"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "my-posts"] });
 
       toast({
         title: "Success",
