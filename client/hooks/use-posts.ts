@@ -96,11 +96,8 @@ export function useCreatePost() {
         formData.append("image", data.image);
       }
 
-      const response = await apiClient.post("/posts", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await apiClient.post("/posts", formData);
+      // Note: Don't set Content-Type for FormData, let browser handle it
       return response.data;
     },
     onSuccess: (newPost) => {
