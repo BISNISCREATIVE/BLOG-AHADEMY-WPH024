@@ -165,3 +165,26 @@ export function useLikePost() {
     },
   });
 }
+
+export function usePublishPost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      published,
+    }: {
+      id: string;
+      published: boolean;
+    }): Promise<Post> => {
+      const response = await apiClient.post(`/posts/${id}/publish`, {
+        published,
+      });
+      return response.data;
+    },
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", id] });
+    },
+  });
+}
