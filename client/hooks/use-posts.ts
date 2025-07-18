@@ -100,8 +100,12 @@ export function useCreatePost() {
       });
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (newPost) => {
+      // Invalidate all post-related queries to show new post everywhere
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "recommended"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-liked"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "my-posts"] });
     },
   });
 }
