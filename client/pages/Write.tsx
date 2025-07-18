@@ -550,12 +550,36 @@ export default function Write() {
     try {
       const contentHtml = editorRef.current?.innerHTML || "";
 
-      const newPost = await createMutation.mutateAsync({
+      const postData = {
         title: formData.title,
         content: contentHtml,
         tags: formData.tags.join(", "),
         image: formData.image,
+      };
+
+      // For create post, send as FormData with published status
+      const formDataToSend = new FormData();
+      formDataToSend.append("title", postData.title);
+      formDataToSend.append("content", postData.content);
+      formDataToSend.append("tags", postData.tags);
+      formDataToSend.append("published", published.toString());
+      if (postData.image) {
+        formDataToSend.append("image", postData.image);
+      }
+
+      const response = await fetch("/api/posts", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
+        body: formDataToSend,
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to create post");
+      }
+
+      const newPost = await response.json();
 
       // If publishing, make a separate publish request
       if (published) {
