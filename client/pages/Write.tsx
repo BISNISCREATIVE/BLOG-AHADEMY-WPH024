@@ -641,6 +641,13 @@ export default function Write() {
       navigate("/");
     } catch (error) {
       console.error("Post creation error:", error);
+      console.error("Error details:", {
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+
       let errorMessage = "Failed to create post";
 
       if (error.response?.data?.message) {
@@ -654,7 +661,7 @@ export default function Write() {
 
       toast({
         title: "Error",
-        description: errorMessage,
+        description: `${errorMessage} (Check console for details)`,
         variant: "destructive",
       });
     }
