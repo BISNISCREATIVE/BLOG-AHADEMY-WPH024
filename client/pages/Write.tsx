@@ -593,19 +593,21 @@ export default function Write() {
         published,
       });
 
-      const newPost = await createMutation.mutateAsync({
+      console.log("About to call createMutation.mutateAsync");
+
+      const postData = {
         title: formData.title,
         content: contentHtml,
         tags: formData.tags.join(", "),
         image: formData.image,
         published,
-      });
+      };
 
-      // If publishing, make a separate publish request
-      if (published) {
-        // For now, we'll assume posts are published by default
-        // In a real app, you might want a separate publish endpoint
-      }
+      console.log("Post data to be sent:", postData);
+
+      const newPost = await createMutation.mutateAsync(postData);
+
+      console.log("Post created successfully:", newPost);
 
       // Manually invalidate all queries to ensure immediate UI updates
       queryClient.invalidateQueries({ queryKey: ["posts"] });
@@ -620,6 +622,22 @@ export default function Write() {
           : "Post saved as draft!",
       });
 
+      // Clear form after successful submission
+      setFormData({
+        title: "",
+        content: "",
+        tags: [],
+        image: null,
+      });
+
+      // Clear editor content
+      if (editorRef.current) {
+        editorRef.current.innerHTML = "";
+      }
+
+      setUploadedImageUrl("");
+
+      console.log("Navigating to home page");
       navigate("/");
     } catch (error) {
       console.error("Post creation error:", error);
