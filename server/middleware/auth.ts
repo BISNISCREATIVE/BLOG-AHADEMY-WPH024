@@ -3,7 +3,7 @@ import { MockDataService } from "../data/mock-data";
 import jwt from "jsonwebtoken";
 
 // JWT secret for simulation - In production, use environment variable
-const JWT_SECRET = "your-secret-key";
+const JWT_SECRET = "demo-jwt-secret-key-for-blog-app";
 
 export interface AuthRequest extends Request {
   user?: {
