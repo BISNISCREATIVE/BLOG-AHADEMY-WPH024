@@ -534,7 +534,14 @@ export default function Write() {
     }
 
     const editorContent = editorRef.current?.innerHTML || "";
-    if (!editorContent.trim() || editorContent === "<br>") {
+    // Strip HTML tags to check if there's actual content
+    const textContent = editorContent.replace(/<[^>]*>/g, "").trim();
+    if (
+      !textContent ||
+      textContent === "" ||
+      editorContent === "<br>" ||
+      editorContent === "<div><br></div>"
+    ) {
       newErrors.content = "Content is required";
     }
 
