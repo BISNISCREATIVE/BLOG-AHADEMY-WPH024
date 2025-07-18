@@ -588,9 +588,14 @@ export default function Write() {
 
       navigate("/");
     } catch (error) {
+      console.error("Post creation error:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to create post";
       toast({
         title: "Error",
-        description: "Failed to create post",
+        description: errorMessage,
         variant: "destructive",
       });
     }
