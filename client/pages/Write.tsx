@@ -559,6 +559,15 @@ export default function Write() {
     try {
       const contentHtml = editorRef.current?.innerHTML || "";
 
+      // Log the data being sent for debugging
+      console.log("Submitting post with data:", {
+        title: formData.title,
+        content: contentHtml,
+        tags: formData.tags.join(", "),
+        hasImage: !!formData.image,
+        published,
+      });
+
       const newPost = await createMutation.mutateAsync({
         title: formData.title,
         content: contentHtml,
