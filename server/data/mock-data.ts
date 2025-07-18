@@ -459,6 +459,26 @@ export class MockDataService {
       ...updates,
     };
 
+    // Update author info in all posts by this user
+    this.posts.forEach((post) => {
+      if (post.author.id === id) {
+        post.author = {
+          ...post.author,
+          ...updates,
+        };
+      }
+    });
+
+    // Update author info in all comments by this user
+    this.comments.forEach((comment) => {
+      if (comment.author.id === id) {
+        comment.author = {
+          ...comment.author,
+          ...updates,
+        };
+      }
+    });
+
     return this.users[userIndex];
   }
 
