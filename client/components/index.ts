@@ -5,4 +5,4 @@ export * from "./essentials";
 
 // Re-export commonly used hooks
 export { useAuth } from "../hooks/use-auth";
-export { useMobile } from "../hooks/use-mobile";
+export { useIsMobile as useMobile } from "../hooks/use-mobile";
