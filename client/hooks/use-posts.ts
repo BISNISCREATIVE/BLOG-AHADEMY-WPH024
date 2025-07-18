@@ -96,7 +96,12 @@ export function useCreatePost() {
         formData.append("image", data.image);
       }
 
-      const response = await apiClient.post("/posts", formData);
+      // Create a custom config that doesn't set Content-Type for FormData
+      const response = await apiClient.post("/posts", formData, {
+        headers: {
+          "Content-Type": undefined, // Let browser set the correct multipart boundary
+        },
+      });
       // Note: Don't set Content-Type for FormData, let browser handle it
       return response.data;
     },
