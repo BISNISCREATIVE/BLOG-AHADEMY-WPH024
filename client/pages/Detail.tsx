@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { usePost, useDeletePost } from "@/hooks/use-posts";
+import { usePost, useDeletePost, useLikePost } from "@/hooks/use-posts";
 import { useComments, useCreateComment } from "@/hooks/use-comments";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
