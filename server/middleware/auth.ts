@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { MockDataService } from "../data/mock-data";
+import jwt from "jsonwebtoken";
 
-// Simple JWT simulation - In production, use a proper JWT library
+// JWT secret for simulation - In production, use environment variable
+const JWT_SECRET = "your-secret-key";
+
 export interface AuthRequest extends Request {
   user?: {
     id: number;
@@ -10,16 +13,15 @@ export interface AuthRequest extends Request {
   };
 }
 
-// Mock token validation - In production, use proper JWT validation
+// JWT token validation
 function validateToken(
   token: string,
 ): { id: number; email: string; name: string } | null {
   try {
-    // Simple base64 decode for simulation
-    const payload = JSON.parse(atob(token.split(".")[1] || ""));
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
 
     // Check if user exists
-    const user = MockDataService.getUserById(payload.id);
+    const user = MockDataService.getUserById(decoded.id);
     if (!user) return null;
 
     return {
@@ -27,22 +29,26 @@ function validateToken(
       email: user.email,
       name: user.name,
     };
-  } catch {
+  } catch (error) {
+    console.error("Token validation error:", error);
     return null;
   }
 }
 
-export function createMockToken(user: {
+export function createToken(user: {
   id: number;
   email: string;
   name: string;
 }): string {
-  // Simple base64 encoding for simulation - In production, use proper JWT
-  const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const payload = btoa(JSON.stringify(user));
-  const signature = btoa("mock-signature");
-
-  return `${header}.${payload}.${signature}`;
+  return jwt.sign(
+    {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    },
+    JWT_SECRET,
+    { expiresIn: "24h" },
+  );
 }
 
 export function authenticateToken(
@@ -53,13 +59,16 @@ export function authenticateToken(
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
+  console.log("Auth header:", authHeader);
+  console.log("Token:", token);
+
   if (!token) {
     return res.status(401).json({ message: "Access token required" });
   }
 
   const user = validateToken(token);
   if (!user) {
-    return res.status(403).json({ message: "Invalid or expired token" });
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 
   req.user = user;
