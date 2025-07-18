@@ -221,14 +221,33 @@ export const updatePost: RequestHandler = (req: AuthRequest, res) => {
         .json({ message: "You can only edit your own posts" });
     }
 
-    const validatedData = updatePostSchema.parse(req.body);
+    console.log("Update post request body:", req.body);
+    console.log("Update post file:", req.file);
+
+    // Handle both JSON and FormData requests
+    const requestData = {
+      title: req.body.title,
+      content: req.body.content,
+      tags: req.body.tags,
+      published: req.body.published === "true" || req.body.published === true,
+    };
+
+    const validatedData = updatePostSchema.parse(requestData);
+
+    // Handle image file if uploaded
+    let imageUrl = req.body.imageUrl;
+    if (req.file) {
+      // In a real app, you would upload to cloud storage here
+      // For now, we'll create a mock URL
+      imageUrl = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+    }
 
     const updatedPost = MockDataService.updatePost(id, {
       title: validatedData.title,
       content: validatedData.content,
       tags: validatedData.tags,
-      imageUrl: req.body.imageUrl,
-      published: req.body.published,
+      imageUrl,
+      published: requestData.published,
     });
 
     if (!updatedPost) {
@@ -237,13 +256,16 @@ export const updatePost: RequestHandler = (req: AuthRequest, res) => {
 
     res.json(updatedPost);
   } catch (error) {
+    console.error("Update post error:", error);
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         message: "Validation error",
         errors: error.errors,
       });
     }
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
