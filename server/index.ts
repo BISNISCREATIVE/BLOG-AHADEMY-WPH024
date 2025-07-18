@@ -59,8 +59,20 @@ export function createServer() {
   app.get("/api/posts/search", searchPosts);
   app.get("/api/posts/by-user/:userId", getPostsByUser);
   app.get("/api/posts/:id", getPost);
-  app.post("/api/posts", authenticateToken, createPost);
-  app.patch("/api/posts/:id", authenticateToken, updatePost);
+  app.post(
+    "/api/posts",
+    authenticateToken,
+    uploadSingle,
+    handleUploadError,
+    createPost,
+  );
+  app.patch(
+    "/api/posts/:id",
+    authenticateToken,
+    uploadSingle,
+    handleUploadError,
+    updatePost,
+  );
   app.delete("/api/posts/:id", authenticateToken, deletePost);
   app.post("/api/posts/:id/like", optionalAuth, likePost);
   app.post("/api/posts/:id/publish", authenticateToken, publishPost);
