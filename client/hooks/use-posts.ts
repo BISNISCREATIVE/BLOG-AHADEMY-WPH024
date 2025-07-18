@@ -173,9 +173,12 @@ export function useLikePost() {
       const response = await apiClient.post(`/posts/${id}/like`);
       return response.data;
     },
-    onSuccess: (_, id) => {
+    onSuccess: (updatedPost, id) => {
+      // Invalidate all post-related queries after like
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["posts", id] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "recommended"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-liked"] });
     },
   });
 }
