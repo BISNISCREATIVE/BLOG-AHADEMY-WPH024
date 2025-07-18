@@ -6,7 +6,7 @@ export {
   useCreateComment,
   useDeleteComment,
 } from "./use-comments";
-export { useMobile } from "./use-mobile";
+export { useIsMobile as useMobile } from "./use-mobile";
 export { useToast } from "./use-toast";
 export {
   useRecommendedPosts,
