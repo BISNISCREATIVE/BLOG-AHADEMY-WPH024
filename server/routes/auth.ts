@@ -84,7 +84,7 @@ export const register: RequestHandler = (req, res) => {
     });
 
     // Generate token
-    const token = createMockToken({
+    const token = createToken({
       id: newUser.id,
       email: newUser.email,
       name: newUser.name,
