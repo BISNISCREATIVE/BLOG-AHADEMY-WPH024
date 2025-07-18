@@ -52,7 +52,7 @@ export function createServer() {
 
   // Posts routes
   app.get("/api/posts", getAllPosts);
-  app.get("/api/posts/recommended", authenticateToken, getRecommendedPosts);
+  app.get("/api/posts/recommended", getRecommendedPosts);
   app.get("/api/posts/most-liked", getMostLikedPosts);
   app.get("/api/posts/my-posts", authenticateToken, getMyPosts);
   app.get("/api/posts/search", searchPosts);
