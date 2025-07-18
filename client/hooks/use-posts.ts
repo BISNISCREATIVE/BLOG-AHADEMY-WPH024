@@ -89,6 +89,9 @@ export function useCreatePost() {
       formData.append("title", data.title);
       formData.append("content", data.content);
       formData.append("tags", data.tags);
+      if (data.published !== undefined) {
+        formData.append("published", data.published.toString());
+      }
       if (data.image) {
         formData.append("image", data.image);
       }
