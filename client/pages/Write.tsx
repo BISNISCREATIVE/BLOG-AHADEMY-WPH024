@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { useCreatePost } from "@/hooks/use-posts";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -439,6 +440,7 @@ export default function Write() {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const editorRef = useRef<HTMLDivElement>(null);
   const createMutation = useCreatePost();
 
@@ -563,6 +565,12 @@ export default function Write() {
         // For now, we'll assume posts are published by default
         // In a real app, you might want a separate publish endpoint
       }
+
+      // Manually invalidate all queries to ensure immediate UI updates
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "recommended"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-liked"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "my-posts"] });
 
       toast({
         title: "Success",
