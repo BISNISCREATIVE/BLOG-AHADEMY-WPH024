@@ -57,20 +57,25 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
+    <div className="min-h-screen bg-white flex items-center justify-center py-8">
       <div className="w-full max-w-md px-4">
         {/* Login Container */}
-        <div className="bg-white rounded-2xl border border-[#E5E7EB] p-8 shadow-sm">
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 md:p-8 shadow-sm">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-[#181D27] mb-2">Login</h1>
+          <div className="text-center mb-6 md:mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-[#181D27] mb-2">
+              Login
+            </h1>
             <p className="text-sm text-[#6B7280]">
               Welcome back! Please enter your details.
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-5 md:space-y-6"
+          >
             {/* Email Field */}
             <div className="space-y-2">
               <Label
@@ -165,7 +170,7 @@ export default function Login() {
             {/* Forgot Password Link */}
             <div className="text-right">
               <Link
-                to="/forgot-password"
+                to="#"
                 className="text-sm font-medium text-[#0093DD] hover:text-[#0074B7] transition-colors"
               >
                 Forgot your password?
@@ -190,7 +195,7 @@ export default function Login() {
           </form>
 
           {/* Register Link */}
-          <div className="text-center mt-8">
+          <div className="text-center mt-6 md:mt-8">
             <p className="text-sm text-[#6B7280]">
               Don't have an account?{" "}
               <Link
@@ -204,7 +209,7 @@ export default function Login() {
         </div>
 
         {/* Mobile Additional Spacing */}
-        <div className="h-20 md:hidden" />
+        <div className="h-16 md:hidden" />
       </div>
     </div>
   );
