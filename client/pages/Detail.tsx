@@ -48,6 +48,7 @@ export default function Detail() {
   const { data: post, isLoading, error } = usePost(id!);
   const { data: comments = [] } = useComments(parseInt(id!));
   const deleteMutation = useDeletePost();
+  const likeMutation = useLikePost();
   const createCommentMutation = useCreateComment(parseInt(id!));
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [newComment, setNewComment] = useState("");
