@@ -37,7 +37,7 @@ export const login: RequestHandler = (req, res) => {
     // You can also add specific demo passwords if needed
 
     // Generate token
-    const token = createMockToken({
+    const token = createToken({
       id: user.id,
       email: user.email,
       name: user.name,
