@@ -1,27 +1,23 @@
 import { useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
 import {
-  useMyPosts,
-  useDeletePost,
-  useLikePost,
-  useUpdatePost,
-} from "@/hooks/use-posts";
-import { useUpdateProfile } from "@/hooks/use-user";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
+  Button,
+  Input,
+  Textarea,
+  Card,
+  CardContent,
+  Badge,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -31,8 +27,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { useToast } from "@/hooks/use-toast";
+  useAuth,
+  useToast,
+} from "@/components";
+import {
+  useMyPosts,
+  useDeletePost,
+  useLikePost,
+  useUpdatePost,
+} from "@/hooks/use-posts";
+import { useUpdateProfile } from "@/hooks/use-user";
 import { validateFile, createFilePreview } from "@/lib/upload";
 import {
   Pencil,
