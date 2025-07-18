@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
-import { useUpdatePost, usePost } from "@/hooks/use-posts";
+import { useUpdatePost, usePost, usePublishPost } from "@/hooks/use-posts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -431,6 +431,7 @@ export default function Edit() {
   const navigate = useNavigate();
   const editorRef = useRef<HTMLDivElement>(null);
   const updateMutation = useUpdatePost();
+  const publishMutation = usePublishPost();
   const { data: post, isLoading, error } = usePost(id!);
 
   const [formData, setFormData] = useState({
@@ -609,6 +610,28 @@ export default function Edit() {
       toast({
         title: "Error",
         description: "Failed to update post",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePublishToggle = async () => {
+    if (!id || !post) return;
+
+    try {
+      await publishMutation.mutateAsync({
+        id,
+        published: !post.published,
+      });
+
+      toast({
+        title: "Success",
+        description: post.published ? "Post unpublished!" : "Post published!",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update post status",
         variant: "destructive",
       });
     }
@@ -809,12 +832,30 @@ export default function Edit() {
             />
           </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-end pt-4">
+          {/* Submit Buttons */}
+          <div className="flex flex-col md:flex-row gap-3 justify-end pt-4">
+            {post && (
+              <Button
+                onClick={handlePublishToggle}
+                disabled={publishMutation.isPending}
+                variant={post.published ? "outline" : "default"}
+                className={`h-11 rounded-full px-8 text-sm font-semibold w-full md:w-auto order-2 md:order-1 ${
+                  post.published
+                    ? ""
+                    : "bg-green-600 hover:bg-green-700 text-white"
+                }`}
+              >
+                {publishMutation.isPending
+                  ? "Updating..."
+                  : post.published
+                    ? "Unpublish"
+                    : "Publish"}
+              </Button>
+            )}
             <Button
               onClick={handleSubmit}
               disabled={updateMutation.isPending}
-              className="h-11 rounded-full bg-[#0093DD] px-8 text-sm font-semibold text-white hover:bg-[#0093DD]/90 w-full md:w-auto"
+              className="h-11 rounded-full bg-[#0093DD] px-8 text-sm font-semibold text-white hover:bg-[#0093DD]/90 w-full md:w-auto order-1 md:order-2"
             >
               {updateMutation.isPending ? "Saving..." : "Save"}
             </Button>
