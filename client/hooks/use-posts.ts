@@ -134,9 +134,15 @@ export function useUpdatePost() {
       });
       return response.data;
     },
-    onSuccess: (_, { id }) => {
+    onSuccess: (updatedPost, { id }) => {
+      // Invalidate all post-related queries to ensure fresh data everywhere
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["posts", id] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "recommended"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-liked"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "my-posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "user"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "search"] });
     },
   });
 }
