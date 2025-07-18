@@ -8,17 +8,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { MobileAuthModal } from "@/components/auth/MobileAuthModal";
 import { useAuth } from "@/hooks/use-auth";
-import { Search, Menu, X, User, LogOut, Edit } from "lucide-react";
+import { Search, Menu, User, LogOut, Edit3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Header() {
@@ -37,187 +31,105 @@ export function Header() {
     }
   };
 
-  const isActivePath = (path: string) => location.pathname === path;
-
   return (
-    <TooltipProvider>
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
-        <div className="flex h-16 items-center justify-between px-4">
-          {/* Logo */}
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-[#E5E7EB]">
+      <div className="w-full max-w-sm mx-auto md:max-w-4xl lg:max-w-6xl xl:max-w-7xl">
+        <div className="flex h-16 items-center justify-between px-4 md:px-8 lg:px-12">
+                    {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             {/* Logo Symbol - matching Figma design */}
             <div className="relative w-8 h-8">
-              {/* First blue shape */}
-              <svg
-                className="absolute top-0 left-0"
-                width="14"
-                height="18"
-                viewBox="0 0 14 18"
-                fill="none"
-              >
-                <path
-                  d="M13.0645 4.96143L4.70703 7.81592V15.521L0 17.1284V4.63916L13.0645 0.179199V4.96143Z"
-                  fill="#0093DD"
-                />
-              </svg>
-              {/* Second blue shape */}
-              <svg
-                className="absolute top-1 left-2"
-                width="14"
-                height="18"
-                viewBox="0 0 14 18"
-                fill="none"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M0.660156 4.98725L13.7248 0.526894V13.0159L0.660156 17.4762V4.98725Z"
-                  fill="#0093DD"
-                />
-              </svg>
+              {/* Main blue squares */}
+              <div className="absolute top-0 left-0 w-4 h-4 bg-[#0093DD] transform rotate-45"></div>
+              <div className="absolute top-1 left-3 w-4 h-4 bg-[#0093DD] transform rotate-45"></div>
             </div>
-            <span className="hidden sm:inline-block font-semibold text-lg text-foreground">
+            <span className="font-semibold text-lg text-[#181D27]">
               Your Logo
             </span>
           </Link>
 
-          {/* Desktop Search */}
+                    {/* Desktop Search */}
           <form
             onSubmit={handleSearch}
-            className="hidden md:flex flex-1 max-w-md mx-8"
+            className="hidden md:flex flex-1 max-w-sm mx-8"
           >
             <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#A4A7AE] h-4 w-4" />
               <Input
                 type="search"
-                placeholder="Search articles..."
+                placeholder="Search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-background"
+                className="pl-10 bg-[#F9FAFB] border-[#E5E7EB] rounded-lg h-10 text-sm placeholder:text-[#A4A7AE] focus:border-[#0093DD] focus:ring-1 focus:ring-[#0093DD]"
               />
             </div>
           </form>
 
-          {/* Right Side Actions */}
+                    {/* Right Side Actions */}
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
               <>
                 {/* Desktop Write Post Button and Profile Menu */}
                 <div className="hidden md:flex items-center gap-3">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        asChild
-                        variant="ghost"
-                        className="h-10 px-4 text-[#0093DD] hover:text-[#0093DD]/80 flex items-center gap-2"
-                      >
-                        <Link to="/write">
-                          <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                          >
-                            <path
-                              d="M2.5 17.5L7.04167 16.0417L16.25 6.83333C16.9167 6.16667 16.9167 5.08333 16.25 4.41667L15.5833 3.75C14.9167 3.08333 13.8333 3.08333 13.1667 3.75L3.95833 12.9583L2.5 17.5Z"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M11.4583 5.54167L14.4583 8.54167"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                          <span className="underline font-medium">
-                            Write Post
-                          </span>
-                        </Link>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Create a new blog post</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <DropdownMenu>
+                  <Button
+                    asChild
+                    variant="ghost"
+                    className="h-auto px-0 text-[#0093DD] hover:text-[#0093DD]/80 hover:bg-transparent flex items-center gap-2"
+                  >
+                    <Link to="/write" className="flex items-center gap-2">
+                      <Edit3 className="h-5 w-5" />
+                      <span className="underline font-medium text-sm">
+                        Write Post
+                      </span>
+                    </Link>
+                  </Button>
+                                    <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="ghost"
-                        className="relative h-10 w-10 rounded-full"
+                        className="relative h-10 w-10 rounded-full p-0 hover:bg-transparent"
                       >
                         <Avatar className="h-10 w-10">
                           <AvatarImage src={user?.avatarUrl} alt={user?.name} />
-                          <AvatarFallback>
+                          <AvatarFallback className="bg-[#F3F4F6] text-[#374151] font-medium">
                             {user?.name?.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
-                      className="w-56"
+                      className="w-48 bg-white border border-[#E5E7EB] shadow-lg rounded-lg"
                       align="end"
-                      forceMount
+                      sideOffset={8}
                     >
-                      <div className="flex items-center gap-2 p-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={user?.avatarUrl} alt={user?.name} />
-                          <AvatarFallback>
-                            {user?.name?.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col space-y-1">
-                          <p className="text-sm font-medium leading-none">
-                            {user?.name}
-                          </p>
-                          <p className="text-xs leading-none text-muted-foreground">
-                            {user?.email}
-                          </p>
-                        </div>
-                      </div>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <Link to="/profile" className="flex items-center">
-                          <User className="mr-2 h-4 w-4" />
-                          My Profile
+                      <DropdownMenuItem asChild className="px-3 py-2 text-sm text-[#374151] hover:bg-[#F9FAFB] cursor-pointer">
+                        <Link to="/profile" className="flex items-center w-full">
+                          <User className="mr-3 h-4 w-4" />
+                          Profile
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link
-                          to={`/user/${user?.id}`}
-                          className="flex items-center"
-                        >
-                          <User className="mr-2 h-4 w-4" />
-                          Visit Profile
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
+                      <DropdownMenuSeparator className="bg-[#E5E7EB]" />
                       <DropdownMenuItem
                         onClick={logout}
-                        className="text-red-600 focus:text-red-600"
+                        className="px-3 py-2 text-sm text-[#374151] hover:bg-[#F9FAFB] cursor-pointer"
                       >
-                        <LogOut className="mr-2 h-4 w-4" />
+                        <LogOut className="mr-3 h-4 w-4" />
                         Logout
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
 
-                {/* Mobile Avatar */}
+                                {/* Mobile Avatar */}
                 <div className="md:hidden">
                   <Button
                     variant="ghost"
-                    className="relative h-10 w-10 rounded-full"
+                    className="relative h-10 w-10 rounded-full p-0 hover:bg-transparent"
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   >
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={user?.avatarUrl} alt={user?.name} />
-                      <AvatarFallback>
+                      <AvatarFallback className="bg-[#F3F4F6] text-[#374151] font-medium">
                         {user?.name?.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
@@ -225,19 +137,19 @@ export function Header() {
                 </div>
               </>
             ) : (
-              <>
+                            <>
                 {/* Desktop Auth Buttons */}
-                <div className="hidden md:flex items-center gap-2">
+                <div className="hidden md:flex items-center gap-3">
                   <Button
                     asChild
                     variant="ghost"
-                    className="text-sm text-[#0093DD] hover:text-[#0093DD]/80"
+                    className="text-sm text-[#0093DD] hover:text-[#0093DD]/80 hover:bg-transparent font-medium"
                   >
                     <Link to="/login">Login</Link>
                   </Button>
                   <Button
                     asChild
-                    className="text-sm bg-[#0093DD] hover:bg-[#0093DD]/90 text-white px-6"
+                    className="text-sm bg-[#0093DD] hover:bg-[#0074B7] text-white px-6 py-2 rounded-lg font-medium"
                   >
                     <Link to="/register">Register</Link>
                   </Button>
@@ -247,30 +159,30 @@ export function Header() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="md:hidden"
+                  className="md:hidden p-2 hover:bg-transparent"
                   onClick={() => setShowMobileAuth(true)}
                 >
-                  <Menu />
+                  <Menu className="h-6 w-6 text-[#374151]" />
                 </Button>
               </>
             )}
           </div>
         </div>
 
-        {/* Mobile Menu */}
+                {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-border bg-background">
+          <div className="md:hidden border-t border-[#E5E7EB] bg-white">
             <div className="px-4 py-4 space-y-4">
               {/* Mobile Search */}
               <form onSubmit={handleSearch}>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#A4A7AE] h-4 w-4" />
                   <Input
                     type="search"
-                    placeholder="Search articles..."
+                    placeholder="Search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 bg-[#F9FAFB] border-[#E5E7EB] rounded-lg h-10 text-sm placeholder:text-[#A4A7AE]"
                   />
                 </div>
               </form>
@@ -281,38 +193,38 @@ export function Header() {
                   <Button
                     asChild
                     variant="ghost"
-                    className="w-full justify-start"
+                    className="w-full justify-start text-[#374151] hover:bg-[#F9FAFB]"
                   >
                     <Link
-                      to="/profile"
+                      to="/write"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <User className="h-4 w-4 mr-2" />
-                      My Profile
+                      <Edit3 className="h-4 w-4 mr-3" />
+                      Write Post
                     </Link>
                   </Button>
                   <Button
                     asChild
                     variant="ghost"
-                    className="w-full justify-start"
+                    className="w-full justify-start text-[#374151] hover:bg-[#F9FAFB]"
                   >
                     <Link
-                      to={`/user/${user?.id}`}
+                      to="/profile"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <User className="h-4 w-4 mr-2" />
-                      Visit Profile
+                      <User className="h-4 w-4 mr-3" />
+                      Profile
                     </Link>
                   </Button>
                   <Button
                     variant="ghost"
-                    className="w-full justify-start"
+                    className="w-full justify-start text-[#374151] hover:bg-[#F9FAFB]"
                     onClick={() => {
                       logout();
                       setIsMobileMenuOpen(false);
                     }}
                   >
-                    <LogOut className="h-4 w-4 mr-2" />
+                    <LogOut className="h-4 w-4 mr-3" />
                     Logout
                   </Button>
                 </div>
@@ -320,6 +232,7 @@ export function Header() {
             </div>
           </div>
         )}
+            </div>
       </header>
 
       {/* Mobile Auth Modal */}
@@ -327,6 +240,5 @@ export function Header() {
         isOpen={showMobileAuth}
         onClose={() => setShowMobileAuth(false)}
       />
-    </TooltipProvider>
   );
 }
