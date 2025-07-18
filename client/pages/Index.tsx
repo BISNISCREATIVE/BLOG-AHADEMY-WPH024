@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { BlogCard } from "@/components/post/BlogCard";
 import { Pagination } from "@/components/ui/pagination";
 import { Footer } from "@/components/layout/Footer";
