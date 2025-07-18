@@ -6,6 +6,7 @@ import {
   useLikePost,
   useUpdatePost,
 } from "@/hooks/use-posts";
+import { useUpdateProfile } from "@/hooks/use-user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -372,15 +373,39 @@ function EditProfileModal({ user, isOpen, onClose }: EditProfileModalProps) {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const { toast } = useToast();
+  const updateProfileMutation = useUpdateProfile();
 
-  const handleSave = () => {
-    // In a real app, you would upload the avatar to a server/cloud storage
-    // and get back a URL to save in the user profile
-    toast({
-      title: "Profile Updated",
-      description: "Your profile has been updated successfully!",
-    });
-    onClose();
+  const handleSave = async () => {
+    if (!name.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Name is required.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await updateProfileMutation.mutateAsync({
+        name: name.trim(),
+        headline: headline.trim(),
+        // For now, we'll handle avatar upload separately
+        // In a real app, you would upload to cloud storage first
+        ...(avatarPreview && { avatarUrl: avatarPreview }),
+      });
+
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully!",
+      });
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleAvatarChange = async (
@@ -478,8 +503,12 @@ function EditProfileModal({ user, isOpen, onClose }: EditProfileModalProps) {
               />
             </div>
           </div>
-          <Button onClick={handleSave} className="w-full">
-            Update Profile
+          <Button
+            onClick={handleSave}
+            disabled={updateProfileMutation.isPending}
+            className="w-full"
+          >
+            {updateProfileMutation.isPending ? "Updating..." : "Update Profile"}
           </Button>
         </div>
       </DialogContent>
