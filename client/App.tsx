@@ -40,7 +40,6 @@ const App = () => (
               <Route path="/user/:userId" element={<VisitProfile />} />
               <Route path="/write" element={<Write />} />
               <Route path="/edit/:id" element={<Edit />} />
-              <Route path="/crud-demo" element={<CrudDemo />} />
               <Route
                 path="/settings"
                 element={<PlaceholderPage title="Settings" />}
