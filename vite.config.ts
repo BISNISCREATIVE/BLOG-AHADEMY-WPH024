@@ -4,9 +4,8 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react()],
-  root: "./client",
   build: {
-    outDir: "../dist/spa",
+    outDir: "dist/spa",
     emptyOutDir: true,
   },
   resolve: {
