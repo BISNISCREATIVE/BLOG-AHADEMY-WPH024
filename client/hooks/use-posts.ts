@@ -199,9 +199,13 @@ export function usePublishPost() {
       });
       return response.data;
     },
-    onSuccess: (_, { id }) => {
+    onSuccess: (updatedPost, { id }) => {
+      // Invalidate all post-related queries after publish status change
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["posts", id] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "recommended"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-liked"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "my-posts"] });
     },
   });
 }
