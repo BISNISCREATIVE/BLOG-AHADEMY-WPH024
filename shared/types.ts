@@ -66,6 +66,7 @@ export interface CreatePostData {
   content: string;
   tags: string;
   image?: File;
+  published?: boolean;
 }
 
 export interface UpdatePostData {
