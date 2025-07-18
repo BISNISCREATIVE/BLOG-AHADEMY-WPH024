@@ -105,12 +105,16 @@ function StatisticsModal({
           <DialogTitle className="flex items-center gap-2">
             {type === "likes" ? (
               <>
-                <Heart className="h-5 w-5 text-red-500" />
+                <div className="w-5 h-5 flex items-center justify-center">
+                  <LikeIcon className="text-red-500" />
+                </div>
                 Like ({post.likes})
               </>
             ) : (
               <>
-                <MessageCircle className="h-5 w-5 text-blue-500" />
+                <div className="w-5 h-5 flex items-center justify-center">
+                  <CommentIcon className="text-blue-500" />
+                </div>
                 Comment ({post.comments})
               </>
             )}
