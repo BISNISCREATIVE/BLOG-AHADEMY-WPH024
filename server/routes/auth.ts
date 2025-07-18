@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { MockDataService } from "../data/mock-data";
-import { createMockToken, AuthRequest } from "../middleware/auth";
+import { createToken, AuthRequest } from "../middleware/auth";
 import { z } from "zod";
 
 // Validation schemas
