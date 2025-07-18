@@ -554,7 +554,32 @@ export default function Write() {
   };
 
   const handleSubmit = async (published = true) => {
-    if (!validateForm()) return;
+    console.log("handleSubmit called with published:", published);
+    console.log("isAuthenticated:", isAuthenticated);
+    console.log("user:", user);
+    console.log("formData:", formData);
+
+    if (!isAuthenticated) {
+      toast({
+        title: "Error",
+        description: "Please log in to create a post",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const isValid = validateForm();
+    console.log("Form validation result:", isValid);
+    console.log("Validation errors:", errors);
+
+    if (!isValid) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       const contentHtml = editorRef.current?.innerHTML || "";
