@@ -156,7 +156,11 @@ export function useDeletePost() {
       return response.data;
     },
     onSuccess: () => {
+      // Invalidate all post-related queries after deletion
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "recommended"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-liked"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "my-posts"] });
     },
   });
 }
