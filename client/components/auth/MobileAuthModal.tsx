@@ -17,40 +17,16 @@ interface MobileAuthModalProps {
 export function MobileAuthModal({ isOpen, onClose }: MobileAuthModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-sm mx-auto p-0 gap-0 bg-white">
+      <DialogContent className="max-w-sm mx-auto p-0 gap-0 bg-white border border-[#E5E7EB] rounded-lg">
         {/* Header */}
-        <DialogHeader className="flex flex-row items-center justify-between p-6 space-y-0">
+        <DialogHeader className="flex flex-row items-center justify-between p-6 space-y-0 border-b border-[#E5E7EB]">
           <div className="flex items-center gap-2">
             {/* Logo Symbol */}
             <div className="relative w-8 h-8">
-              <svg
-                className="absolute top-0 left-0"
-                width="14"
-                height="18"
-                viewBox="0 0 14 18"
-                fill="none"
-              >
-                <path
-                  d="M13.0645 4.96143L4.70703 7.81592V15.521L0 17.1284V4.63916L13.0645 0.179199V4.96143Z"
-                  fill="#0093DD"
-                />
-              </svg>
-              <svg
-                className="absolute top-1 left-2"
-                width="14"
-                height="18"
-                viewBox="0 0 14 18"
-                fill="none"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M0.660156 4.98725L13.7248 0.526894V13.0159L0.660156 17.4762V4.98725Z"
-                  fill="#0093DD"
-                />
-              </svg>
+              <div className="absolute top-0 left-0 w-4 h-4 bg-[#0093DD] transform rotate-45"></div>
+              <div className="absolute top-1 left-3 w-4 h-4 bg-[#0093DD] transform rotate-45"></div>
             </div>
-            <DialogTitle className="font-semibold text-lg text-foreground">
+            <DialogTitle className="font-semibold text-lg text-[#181D27]">
               Your Logo
             </DialogTitle>
           </div>
@@ -58,18 +34,18 @@ export function MobileAuthModal({ isOpen, onClose }: MobileAuthModalProps) {
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="h-6 w-6 shrink-0"
+            className="h-8 w-8 shrink-0 hover:bg-[#F9FAFB]"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4 text-[#374151]" />
           </Button>
         </DialogHeader>
 
         {/* Content */}
-        <div className="flex flex-col items-center justify-center py-16 px-6 space-y-4">
+        <div className="flex flex-col items-center justify-center py-8 px-6 space-y-4">
           <Button
             asChild
             variant="ghost"
-            className="w-full text-[#0093DD] hover:text-[#0093DD]/80 font-medium text-base"
+            className="w-full text-[#0093DD] hover:text-[#0093DD]/80 hover:bg-[#F0F9FF] font-medium text-base py-3"
             onClick={onClose}
           >
             <Link to="/login">Login</Link>
@@ -77,7 +53,7 @@ export function MobileAuthModal({ isOpen, onClose }: MobileAuthModalProps) {
 
           <Button
             asChild
-            className="w-full bg-[#0093DD] hover:bg-[#0093DD]/90 text-white font-medium text-base py-3"
+            className="w-full bg-[#0093DD] hover:bg-[#0074B7] text-white font-medium text-base py-3 rounded-lg"
             onClick={onClose}
           >
             <Link to="/register">Register</Link>
