@@ -28,6 +28,7 @@ import {
   getProfile,
 } from "./routes/users";
 import { authenticateToken, optionalAuth } from "./middleware/auth";
+import { uploadSingle, handleUploadError } from "./middleware/upload";
 
 export function createServer() {
   const app = express();
