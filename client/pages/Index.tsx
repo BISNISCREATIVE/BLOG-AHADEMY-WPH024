@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { BlogCard, Pagination, Footer, useAuth } from "@/components";
+import { BlogCard } from "@/components/post/BlogCard";
+import { Pagination } from "@/components/ui/pagination";
+import { Footer } from "@/components/layout/Footer";
 import { useRecommendedPosts, useMostLikedPosts } from "@/hooks/use-posts";
+import { useAuth } from "@/hooks/use-auth";
 
 // Simple BlogCard for Most Liked (text only, no images)
 function SimpleBlogCard({ post }: { post: any }) {
