@@ -127,11 +127,8 @@ export function useUpdatePost() {
       if (data.tags) formData.append("tags", data.tags);
       if (data.image) formData.append("image", data.image);
 
-      const response = await apiClient.patch(`/posts/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await apiClient.patch(`/posts/${id}`, formData);
+      // Note: Don't set Content-Type for FormData, let browser handle it
       return response.data;
     },
     onSuccess: (updatedPost, { id }) => {
