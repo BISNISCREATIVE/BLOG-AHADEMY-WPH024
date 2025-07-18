@@ -94,8 +94,11 @@ const createSequentialPosts = (): Post[] => {
       imageUrl: carouselImage,
       author: mockUsers[(i - 1) % mockUsers.length] as Author,
       createdAt: new Date(Date.now() - i * 60 * 60 * 1000).toISOString(), // Each post 1 hour apart
+      updatedAt: new Date(Date.now() - i * 60 * 60 * 1000).toISOString(),
       likes: Math.floor(Math.random() * 50) + 10, // Random likes between 10-60
       comments: Math.floor(Math.random() * 30) + 5, // Random comments between 5-35
+      published: true,
+      publishedAt: new Date(Date.now() - i * 60 * 60 * 1000).toISOString(),
     });
   }
 
@@ -112,8 +115,11 @@ const createSequentialPosts = (): Post[] => {
       imageUrl: undefined, // No images for Most Liked posts
       author: mockUsers[(i - 1) % mockUsers.length] as Author,
       createdAt: new Date(Date.now() - i * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - i * 60 * 60 * 1000).toISOString(),
       likes: Math.floor(Math.random() * 80) + 40, // Higher likes for "Most Liked" (40-120)
       comments: Math.floor(Math.random() * 25) + 10, // Comments between 10-35
+      published: true,
+      publishedAt: new Date(Date.now() - i * 60 * 60 * 1000).toISOString(),
     });
   }
 
@@ -317,12 +323,14 @@ export class MockDataService {
     tags: string[];
     imageUrl?: string;
     authorId: number;
+    published?: boolean;
   }): Post {
     const author = this.users.find((u) => u.id === postData.authorId);
     if (!author) {
       throw new Error("Author not found");
     }
 
+    const now = new Date().toISOString();
     const newPost: Post = {
       id: this.nextPostId++,
       title: postData.title,
@@ -330,9 +338,12 @@ export class MockDataService {
       tags: postData.tags,
       imageUrl: postData.imageUrl,
       author: author as Author,
-      createdAt: new Date().toISOString(),
+      createdAt: now,
+      updatedAt: now,
       likes: 0,
       comments: 0,
+      published: postData.published ?? false,
+      publishedAt: postData.published ? now : undefined,
     };
 
     this.posts.unshift(newPost);
@@ -346,6 +357,7 @@ export class MockDataService {
       content?: string;
       tags?: string[];
       imageUrl?: string;
+      published?: boolean;
     },
   ): Post | null {
     const postIndex = this.posts.findIndex((post) => post.id === id);
@@ -353,9 +365,17 @@ export class MockDataService {
       return null;
     }
 
+    const currentPost = this.posts[postIndex];
+    const now = new Date().toISOString();
+
     this.posts[postIndex] = {
-      ...this.posts[postIndex],
+      ...currentPost,
       ...updates,
+      updatedAt: now,
+      publishedAt:
+        updates.published && !currentPost.published
+          ? now
+          : currentPost.publishedAt,
     };
 
     return this.posts[postIndex];
