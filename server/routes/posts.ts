@@ -72,7 +72,13 @@ export const getMyPosts: RequestHandler = (req: AuthRequest, res) => {
     }
 
     const { page, limit } = paginationSchema.parse(req.query);
-    const result = MockDataService.getPostsByAuthor(req.user.id, page, limit);
+    const includeUnpublished = req.query.includeUnpublished === "true";
+    const result = MockDataService.getPostsByAuthor(
+      req.user.id,
+      page,
+      limit,
+      includeUnpublished,
+    );
 
     res.json(result);
   } catch (error) {
@@ -106,7 +112,13 @@ export const getPostsByUser: RequestHandler = (req, res) => {
     }
 
     const { page, limit } = paginationSchema.parse(req.query);
-    const result = MockDataService.getPostsByAuthor(userId, page, limit);
+    const includeUnpublished = req.query.includeUnpublished === "true";
+    const result = MockDataService.getPostsByAuthor(
+      userId,
+      page,
+      limit,
+      includeUnpublished,
+    );
 
     res.json(result);
   } catch (error) {
