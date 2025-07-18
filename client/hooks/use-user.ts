@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/api";
 import { User, UpdateUserData } from "@shared/types";
+import { useAuth } from "@/hooks/use-auth";
 
 export function useProfile() {
   return useQuery({
@@ -25,6 +26,7 @@ export function useUser(id: string) {
 
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
+  const { updateUser } = useAuth();
 
   return useMutation({
     mutationFn: async (data: UpdateUserData): Promise<User> => {
@@ -32,12 +34,15 @@ export function useUpdateProfile() {
       return response.data;
     },
     onSuccess: (updatedUser) => {
+      // Update auth context first for immediate UI updates
+      updateUser(updatedUser);
+
+      // Invalidate queries to refresh any cached data
       queryClient.invalidateQueries({ queryKey: ["user", "profile"] });
       queryClient.invalidateQueries({
         queryKey: ["user", updatedUser.id.toString()],
       });
-      // Update the user data in auth context
-      localStorage.setItem("user_data", JSON.stringify(updatedUser));
+      queryClient.invalidateQueries({ queryKey: ["posts"] }); // Refresh posts to update author info
     },
   });
 }
