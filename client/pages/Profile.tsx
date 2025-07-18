@@ -40,14 +40,17 @@ import {
   BarChart3,
   Camera,
   FileText,
-  Heart,
-  MessageCircle,
-  Eye,
   Settings,
   User,
   Lock,
   X,
 } from "lucide-react";
+import {
+  LikeIcon,
+  CommentIcon,
+  ViewsIcon,
+  EditIcon,
+} from "@/components/ui/custom-icons";
 import { Post } from "@shared/types";
 
 interface StatisticsModalProps {
@@ -716,7 +719,7 @@ export default function Profile() {
                             onClick={() => setEditPostModal(post)}
                             className="flex items-center gap-1"
                           >
-                            <Pencil className="h-4 w-4" />
+                            <EditIcon className="h-4 w-4" />
                             Edit
                           </Button>
                           <AlertDialog>
@@ -758,24 +761,21 @@ export default function Profile() {
                           onClick={() =>
                             setStatisticsModal({ post, type: "likes" })
                           }
-                          className="flex items-center gap-1 hover:text-red-600 transition-colors"
+                          className="hover:opacity-80 transition-opacity"
                         >
-                          <Heart className="h-4 w-4" />
-                          {post.likes} likes
+                          <LikeIcon count={post.likes} isLiked={false} />
                         </button>
                         <button
                           onClick={() =>
                             setStatisticsModal({ post, type: "comments" })
                           }
-                          className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+                          className="hover:opacity-80 transition-opacity"
                         >
-                          <MessageCircle className="h-4 w-4" />
-                          {post.comments} comments
+                          <CommentIcon count={post.comments} />
                         </button>
-                        <span className="flex items-center gap-1">
-                          <Eye className="h-4 w-4" />
-                          {Math.floor(Math.random() * 1000) + 100} views
-                        </span>
+                        <ViewsIcon
+                          count={Math.floor(Math.random() * 1000) + 100}
+                        />
                       </div>
                     </CardContent>
                   </Card>
