@@ -13,6 +13,7 @@ import {
   updatePost,
   deletePost,
   likePost,
+  publishPost,
 } from "./routes/posts";
 import { login, register, getCurrentUser, logout } from "./routes/auth";
 import {
@@ -20,7 +21,12 @@ import {
   createComment,
   deleteComment,
 } from "./routes/comments";
-import { getUserById, getAllUsers } from "./routes/users";
+import {
+  getUserById,
+  getAllUsers,
+  updateProfile,
+  getProfile,
+} from "./routes/users";
 import { authenticateToken, optionalAuth } from "./middleware/auth";
 
 export function createServer() {
@@ -56,6 +62,7 @@ export function createServer() {
   app.patch("/api/posts/:id", authenticateToken, updatePost);
   app.delete("/api/posts/:id", authenticateToken, deletePost);
   app.post("/api/posts/:id/like", optionalAuth, likePost);
+  app.post("/api/posts/:id/publish", authenticateToken, publishPost);
 
   // Comments routes
   app.get("/api/posts/:postId/comments", getPostComments);
@@ -65,6 +72,8 @@ export function createServer() {
   // Users routes
   app.get("/api/users", getAllUsers);
   app.get("/api/users/:id", getUserById);
+  app.get("/api/users/profile", authenticateToken, getProfile);
+  app.patch("/api/users/profile", authenticateToken, updateProfile);
 
   return app;
 }
