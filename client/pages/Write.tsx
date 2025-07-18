@@ -598,10 +598,17 @@ export default function Write() {
       navigate("/");
     } catch (error) {
       console.error("Post creation error:", error);
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to create post";
+      let errorMessage = "Failed to create post";
+
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.errors) {
+        const errors = error.response.data.errors;
+        errorMessage = errors.map((e) => e.message).join(", ");
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       toast({
         title: "Error",
         description: errorMessage,
