@@ -148,6 +148,7 @@ export const createPost: RequestHandler = (req: AuthRequest, res) => {
       tags: validatedData.tags,
       imageUrl: req.body.imageUrl, // Optional image URL
       authorId: req.user.id,
+      published: req.body.published || false,
     });
 
     res.status(201).json(newPost);
@@ -193,6 +194,7 @@ export const updatePost: RequestHandler = (req: AuthRequest, res) => {
       content: validatedData.content,
       tags: validatedData.tags,
       imageUrl: req.body.imageUrl,
+      published: req.body.published,
     });
 
     if (!updatedPost) {
@@ -265,13 +267,56 @@ export const likePost: RequestHandler = (req: AuthRequest, res) => {
   }
 };
 
+// POST /api/posts/:id/publish - Publish/unpublish post
+export const publishPost: RequestHandler = (req: AuthRequest, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid post ID" });
+    }
+
+    // Check if post exists and user owns it
+    const existingPost = MockDataService.getPostById(id);
+    if (!existingPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (existingPost.author.id !== req.user.id) {
+      return res
+        .status(403)
+        .json({ message: "You can only publish your own posts" });
+    }
+
+    const published = req.body.published ?? true;
+    const updatedPost = MockDataService.updatePost(id, { published });
+
+    if (!updatedPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    res.json(updatedPost);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 // GET /api/posts - Get all posts with optional filtering
 export const getAllPosts: RequestHandler = (req, res) => {
   try {
     const { page, limit } = paginationSchema.parse(req.query);
     const sortBy = req.query.sort === "likes" ? "likes" : "latest";
+    const includeUnpublished = req.query.includeUnpublished === "true";
 
-    const result = MockDataService.getAllPosts(page, limit, sortBy);
+    const result = MockDataService.getAllPosts(
+      page,
+      limit,
+      sortBy,
+      includeUnpublished,
+    );
     res.json(result);
   } catch (error) {
     res.status(400).json({ message: "Invalid query parameters" });
