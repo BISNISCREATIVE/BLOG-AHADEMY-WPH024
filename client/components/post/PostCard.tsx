@@ -4,7 +4,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Post } from "@shared/types";
-import { Heart, MessageCircle, Calendar } from "lucide-react";
+import { Calendar } from "lucide-react";
+import { LikeIcon, CommentIcon } from "@/components/ui/custom-icons";
 import { useLikePost } from "@/hooks/use-posts";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDistanceToNow } from "date-fns";
@@ -95,24 +96,20 @@ export function PostCard({ post, className }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 px-2"
+              className="h-8 px-0 hover:bg-transparent"
               onClick={handleLike}
               disabled={!isAuthenticated || likeMutation.isPending}
             >
-              <Heart
-                className={cn(
-                  "h-4 w-4 mr-1",
-                  // TODO: Add liked state when we have user likes data
-                  "text-muted-foreground",
-                )}
-              />
-              <span className="text-sm">{post.likes}</span>
+              <LikeIcon count={post.likes} isLiked={false} />
             </Button>
 
             <Link to={`/post/${post.id}#comments`}>
-              <Button variant="ghost" size="sm" className="h-8 px-2">
-                <MessageCircle className="h-4 w-4 mr-1 text-muted-foreground" />
-                <span className="text-sm">{post.comments}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-0 hover:bg-transparent"
+              >
+                <CommentIcon count={post.comments} />
               </Button>
             </Link>
           </div>
