@@ -22,8 +22,11 @@ export interface Post {
   imageUrl?: string;
   author: Author;
   createdAt: string;
+  updatedAt?: string;
   likes: number;
   comments: number;
+  published: boolean;
+  publishedAt?: string;
 }
 
 export interface Comment {
@@ -70,6 +73,13 @@ export interface UpdatePostData {
   content?: string;
   tags?: string;
   image?: File;
+  published?: boolean;
+}
+
+export interface UpdateUserData {
+  name?: string;
+  headline?: string;
+  avatarUrl?: string;
 }
 
 export interface CreateCommentData {
