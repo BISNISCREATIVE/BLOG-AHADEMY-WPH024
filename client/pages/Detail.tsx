@@ -270,6 +270,8 @@ export default function Detail() {
             variant="ghost"
             size="sm"
             className="flex items-center gap-2 text-[#535862] hover:text-[#0093DD] p-0"
+            onClick={() => likeMutation.mutate(id!)}
+            disabled={!isAuthenticated || likeMutation.isPending}
           >
             <svg
               width="20"
